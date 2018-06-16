@@ -32,10 +32,32 @@
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
          }).addTo(map)
 
+          //Leaflet has a very handy shortcut for zooming the map view to the detected location — locate method with the setView option, replacing the usual setView method in the code:
+         map.locate({setView: true, maxZoom: 16});
+
       	 //Marker to show the user‘s current position
-         L.marker([53.073635, 8.806422]).addTo(map)
+         /*L.marker([53.073635, 8.806422]).addTo(map)
     	.bindPopup('You are  here..!')
-    	.openPopup();
+    	.openPopup();*/
+
+    	//adding an event listener to locationfound event before the locateAndSetView call:
+		function onLocationFound(e) {
+    		var radius = e.accuracy / 2;
+
+    		L.marker(e.latlng).addTo(map)
+        		.bindPopup("You are within " + radius + " meters from this point").openPopup();
+
+    		L.circle(e.latlng, radius).addTo(map);
+		}
+
+		map.on('locationfound', onLocationFound);    	
+
+		//show an error message if the geolocation failed:
+		function onLocationError(e) {
+    		alert(e.message);
+		}
+
+		map.on('locationerror', onLocationError);
 
 	</script>
 </body>
